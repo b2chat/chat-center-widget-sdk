@@ -17,7 +17,7 @@ export type B2ChatState = {
   >
     ? T
     : never;
-} & { [key: string]: any };
+};
 
 type UseB2ChatStoreOptions = {
   [key in keyof B2ChatStore["events"]]?: (
