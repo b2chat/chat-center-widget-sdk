@@ -30,6 +30,7 @@ export const eventEmitter = <T>(
     };
 
     subscribers.set(run, unsubscriber);
+
     if (subscribers.size === 1) {
       stop = start?.(dispatch);
     }
