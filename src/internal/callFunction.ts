@@ -9,10 +9,10 @@ export function callFunction<Args extends any[], R>(
   return new Promise<R>((resolve) => {
     const key = uniqueKey();
 
-    port.postMessage({ eventType: `call/${fnName}`, args, key });
-
     port.onMessage(`result/${fnName}`, (event) => resolve(event.detail.value), {
       once: true,
     });
+
+    port.postMessage({ eventType: `call/${fnName}`, args, key });
   });
 }

@@ -5,6 +5,7 @@ export type { Stop, Subscriber, Unsubscriber };
 export interface Readable<T = unknown> {
   subscribe: (run: Subscriber<T>) => Unsubscriber;
   get: () => T;
+  when: (predicate: (value: T) => boolean) => Promise<T>;
 }
 
 export interface Writable<T = unknown> extends Readable<T> {
@@ -29,9 +30,9 @@ export const writable = <T>(
   start?: StartStopNotifier<T>,
   equalFn: EqualFn<T> = strictEquals
 ): Writable<T> => {
-  const emitter = eventEmitter<T>(() => start?.(set, update));
-
   let currentValue = initialValue;
+
+  const emitter = eventEmitter<T>(() => start?.(set, update));
 
   const get = () => currentValue;
 
@@ -52,11 +53,22 @@ export const writable = <T>(
     return unsubscriber;
   };
 
+  const when = (predicate: (value: T) => boolean) =>
+    new Promise<T>((resolve) => {
+      subscribe((value, unsubscribe) => {
+        if (predicate(value)) {
+          unsubscribe();
+          resolve(value);
+        }
+      });
+    });
+
   return {
     get,
     set,
     update,
     subscribe,
+    when,
   };
 };
 

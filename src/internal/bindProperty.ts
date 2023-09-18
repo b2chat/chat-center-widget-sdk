@@ -10,13 +10,13 @@ export function bindProperty<T>(
   return readable(initialValue, (set) => {
     const key = uniqueKey();
 
-    port.postMessage({ eventType: `subscribe/${propName}`, key });
-
     const unsubscribeFromPort = port.onMessage(`event/${propName}`, (event) => {
       const { detail } = event;
 
       if (detail.key === key) set(detail.value);
     });
+
+    port.postMessage({ eventType: `subscribe/${propName}`, key });
 
     return () => {
       unsubscribeFromPort();

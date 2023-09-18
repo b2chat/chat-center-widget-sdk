@@ -9,20 +9,20 @@ const isWidgetMessage = (
   event: MessageEvent<any>
 ): event is MessageEvent<WidgetMessage> => event.data?.WIDGET_MESSAGE;
 
-export class WidgetMessagePort extends EventTarget {
+export class WidgetMessagePort extends window.EventTarget {
   private messagePorts: { port: Window; origin: string }[] = [];
 
-  constructor() {
+  constructor(private win: Window & typeof globalThis) {
     super();
     this.connect();
   }
 
   connect() {
-    window.addEventListener("message", this.windowMessageHandler);
+    this.win.addEventListener("message", this.windowMessageHandler);
   }
 
   disconnect() {
-    window.removeEventListener("message", this.windowMessageHandler);
+    this.win.removeEventListener("message", this.windowMessageHandler);
     this.messagePorts = [];
   }
 
@@ -30,7 +30,7 @@ export class WidgetMessagePort extends EventTarget {
     if (isWidgetMessage(event)) {
       const { data, source, origin } = event;
 
-      const widgetEvent = new CustomEvent(data.eventType, {
+      const widgetEvent = new this.win.CustomEvent(data.eventType, {
         detail: data,
       });
 
@@ -39,7 +39,9 @@ export class WidgetMessagePort extends EventTarget {
         origin: { value: origin, enumerable: true },
       });
 
-      console.log(`[widget-message] < ${data.eventType} ${origin} ${data.key}`);
+      console.log(
+        `[widget-message] < ${data.eventType} from ${origin} ${data.key}`
+      );
       this.dispatchEvent(widgetEvent);
     }
   };
@@ -92,7 +94,7 @@ export class WidgetMessagePort extends EventTarget {
 
     ports.forEach(({ port, origin }) => {
       console.log(
-        `[widget-message] > ${message.eventType} ${origin} ${message.key}`
+        `[widget-message] > ${message.eventType} to ${origin} ${message.key}`
       );
       port.postMessage(message, origin);
     });
@@ -103,6 +105,6 @@ export const getWidgetMessagePort = (() => {
   let instance: WidgetMessagePort;
 
   return () => {
-    return (instance ??= new WidgetMessagePort());
+    return (instance ??= new WidgetMessagePort(window));
   };
 })();
