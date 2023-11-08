@@ -45,7 +45,7 @@ const parentAndWidgetMock = () => {
 
   // #region
   const { WidgetMessagePort } = require("../internal/WidgetMessagePort");
-  // It links the parent Window with the Widget's contentWindow
+  // It binds the parent Window with the Widget's contentWindow
   const windowPort = new WidgetMessagePort(window);
   windowPort.addMessagePort(
     widgetContentWindow,

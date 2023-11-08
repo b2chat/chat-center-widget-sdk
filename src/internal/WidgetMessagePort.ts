@@ -3,7 +3,7 @@ import {
   WidgetMessageEventType,
   WidgetMessageListener,
   Unsubscriber,
-} from "../types";
+} from "./types";
 
 const isWidgetMessage = (
   event: MessageEvent<any>
@@ -12,17 +12,17 @@ const isWidgetMessage = (
 export class WidgetMessagePort extends window.EventTarget {
   private messagePorts: { port: Window; origin: string }[] = [];
 
-  constructor(private win: Window & typeof globalThis) {
+  constructor(private window: Window & typeof globalThis) {
     super();
     this.connect();
   }
 
   connect() {
-    this.win.addEventListener("message", this.windowMessageHandler);
+    this.window.addEventListener("message", this.windowMessageHandler);
   }
 
   disconnect() {
-    this.win.removeEventListener("message", this.windowMessageHandler);
+    this.window.removeEventListener("message", this.windowMessageHandler);
     this.messagePorts = [];
   }
 
@@ -30,7 +30,7 @@ export class WidgetMessagePort extends window.EventTarget {
     if (isWidgetMessage(event)) {
       const { data, source, origin } = event;
 
-      const widgetEvent = new this.win.CustomEvent(data.eventType, {
+      const widgetEvent = new this.window.CustomEvent(data.eventType, {
         detail: data,
       });
 
@@ -39,9 +39,7 @@ export class WidgetMessagePort extends window.EventTarget {
         origin: { value: origin, enumerable: true },
       });
 
-      console.log(
-        `[widget-message] < ${data.eventType} from ${origin} ${data.key}`
-      );
+      debugIncoming(data);
       this.dispatchEvent(widgetEvent);
     }
   };
@@ -93,9 +91,7 @@ export class WidgetMessagePort extends window.EventTarget {
     const ports = options ? [options] : messagePorts;
 
     ports.forEach(({ port, origin }) => {
-      console.log(
-        `[widget-message] > ${message.eventType} to ${origin} ${message.key}`
-      );
+      debugOutgoing(message);
       port.postMessage(message, origin);
     });
   };
@@ -108,3 +104,17 @@ export const getWidgetMessagePort = (() => {
     return (instance ??= new WidgetMessagePort(window));
   };
 })();
+
+function debugIncoming(data: WidgetMessage) {
+  const message = `[widget] < ${data.eventType} from ${origin} ${data.key}`;
+
+  if (data.args) console.log(message, ...data.args);
+  else if (data.value) console.log(message, data.value);
+}
+
+function debugOutgoing(data: WidgetMessage) {
+  const message = `[widget] > ${data.eventType}   to ${origin} ${data.key}`;
+
+  if (data.args) console.log(message, ...data.args);
+  else if (data.value) console.log(message, data.value);
+}

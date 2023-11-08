@@ -1,26 +1,36 @@
 import type { Store } from "redux";
-import { EqualFn, Readable, readable, strictEquals } from "../utils/store";
+import { Readable, readable } from "../utils/store";
 
-export type Selector<S, T = unknown> = (state: S) => T;
+type Selector<S, T = any> = (state: S) => T;
+
+const id: Selector<any> = (value) => value;
 
 export const reduxStoreReadable = <S, T>(
   store: Store<S>,
   selector: Selector<S, T>,
-  equalFn: EqualFn<T> = strictEquals
+  dependencies: Selector<S>[] = []
 ): Readable<T> => {
-  const initialValue = selector(store.getState());
+  let currentState = store.getState();
 
-  return readable(
-    initialValue,
-    (set) => {
-      const unsubscribeFromRedux = store.subscribe(() => {
-        const nextValue = selector(store.getState());
+  let depsEvaluated = Array(dependencies.length);
 
-        set(nextValue);
-      });
+  const initialValue = selector(currentState);
 
-      return unsubscribeFromRedux;
-    },
-    equalFn
-  );
+  return readable(initialValue, (set) => {
+    const unsubscribeFromRedux = store.subscribe(() => {
+      currentState = store.getState();
+
+      let changed = dependencies.length === 0;
+      for (let i = 0; i < dependencies.length; i++) {
+        const nextValue = dependencies[i](currentState);
+
+        if (depsEvaluated[i] !== nextValue) changed = true;
+
+        depsEvaluated[i] = nextValue;
+      }
+      if (changed) set(selector(currentState));
+    });
+
+    return unsubscribeFromRedux;
+  });
 };

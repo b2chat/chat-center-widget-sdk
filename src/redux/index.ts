@@ -1,1 +1,1 @@
-export { Selector, reduxStoreReadable } from "./reduxStoreReadable";
+export { reduxStoreReadable } from "./reduxStoreReadable";

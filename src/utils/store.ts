@@ -18,6 +18,9 @@ export type EqualFn<T> = (currentValue: T, nextValue: T) => boolean;
 export const strictEquals = <T>(currentValue: T, nextValue: T) =>
   currentValue === nextValue;
 
+/**
+ * Start and Stop callback lifecycle of the `Writable`
+ */
 export type StartStopNotifier<T> = (
   set: (value: T) => void,
   update: (fn: Updater<T>) => void
@@ -25,6 +28,14 @@ export type StartStopNotifier<T> = (
 
 export type Updater<T> = (value: T) => T;
 
+/**
+ * Creates a Observable that internally use a `eventEmitter` to store the subscriptions
+ * @param initialValue
+ * @param start executed after the first subscription to init, it could returns a `stop`
+ * callback that will be executed after the last unsubscription for cleanup purposes
+ * @param equalFn by default `===` will be use to detect when the value has changed
+ * @returns a writable observable
+ */
 export const writable = <T>(
   initialValue: T,
   start?: StartStopNotifier<T>,
@@ -72,6 +83,14 @@ export const writable = <T>(
   };
 };
 
+/**
+ * Creates a Observable that internally use a `eventEmitter` to store the subscriptions
+ * @param initialValue
+ * @param start executed after the first subscription to init, it could returns a `stop`
+ * callback that will be executed after the last unsubscription for cleanup purposes
+ * @param equalFn by default `===` will be use to detect when the value has changed
+ * @returns a readonly observable
+ */
 export const readable = <T>(
   initialValue: T,
   start?: StartStopNotifier<T>,

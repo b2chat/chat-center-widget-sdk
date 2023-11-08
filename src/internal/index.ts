@@ -1,7 +1,7 @@
 export { bindEvent } from "./bindEvent";
 export { bindProperty } from "./bindProperty";
-export { callFunction } from "./callFunction";
+export { callFunction, callAsync } from "./callFunction";
 export { registerEvent } from "./registerEvent";
-export { registerFunction } from "./registerFunction";
+export { registerFunction, registerAsync } from "./registerFunction";
 export { registerProperty } from "./registerProperty";
 export { getWidgetMessagePort, WidgetMessagePort } from "./WidgetMessagePort";

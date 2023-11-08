@@ -10,6 +10,7 @@ import {
 import { B2ChatStore, getB2ChatStore } from "../B2ChatStore";
 import { Unsubscriber, EventEmitter } from "../utils/eventEmitter";
 import { Readable } from "../utils/store";
+import useAsyncFunction from "./useAsyncFunction";
 
 export type B2ChatState = {
   [key in keyof B2ChatStore["state"]]: B2ChatStore["state"][key] extends Readable<
@@ -63,6 +64,9 @@ const useB2ChatStore = (options?: UseB2ChatStoreOptions) => {
   useEffect(() => {
     const subscriptions: Record<string, Unsubscriber> = {};
 
+    // This proxy allows lazy subscriptions to B2ChatStore
+    // The subscription to a property will be activated if the user try to read it
+    // and will be disconnected on useEffect clean-up callback
     const nextState = new Proxy({} as B2ChatState, {
       get(target, propName: string) {
         const property: Readable = store.state[propName];
@@ -70,6 +74,8 @@ const useB2ChatStore = (options?: UseB2ChatStoreOptions) => {
         if (property) {
           subscriptions[propName] ??= property.subscribe((value) => {
             target[propName] = value;
+            // because the Proxy instance is a stable ref is obligatory
+            // to trigger a re-render explicitly to see the prop changes
             reRender();
           });
 
@@ -85,13 +91,31 @@ const useB2ChatStore = (options?: UseB2ChatStoreOptions) => {
     };
   }, []);
 
-  return { ...store.methods, state };
+  const findContact = useAsyncFunction(store.methods.findChat, []);
+
+  const getTags = useAsyncFunction(store.methods.getTags, []);
+
+  const assignTag = useAsyncFunction(store.methods.assignTag, false);
+
+  const unassignTag = useAsyncFunction(store.methods.unassignTag, false);
+
+  const setInputMessageContent = store.methods.setInputMessageContent;
+
+  return {
+    methods: store.methods,
+    state,
+    findContact,
+    getTags,
+    assignTag,
+    unassignTag,
+    setInputMessageContent,
+  };
 };
 
 export default useB2ChatStore;
 
+const reducer = (value: number) => value + 1;
 export const useReRender = () => {
-  const [, reRender] = useReducer((v) => v + 1, 0);
-
+  const [, reRender] = useReducer(reducer, 0);
   return reRender;
 };

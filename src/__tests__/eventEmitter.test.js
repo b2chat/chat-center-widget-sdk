@@ -17,13 +17,13 @@ describe("eventEmitter module", () => {
 
     const subs = [emitter.subscribe(jest.fn()), emitter.subscribe(jest.fn())];
 
-    // Start should be triggered
+    // Start-fn should be triggered
     expect(start).toBeCalledTimes(1);
     expect(stop).toBeCalledTimes(0);
 
     subs.forEach((unsub) => unsub());
 
-    // Stop should be triggered when subs === 0
+    // Stop-fn should be triggered when there aren't subs
     expect(start).toBeCalledTimes(1);
     expect(stop).toBeCalledTimes(1);
   });
@@ -31,9 +31,9 @@ describe("eventEmitter module", () => {
   test("subscribe and unsubscribe", () => {
     const emitter = eventEmitter((dispatch) => {
       dispatch("foo");
-    });
+    }); 
 
-    const listener = jest.fn();
+   const listener = jest.fn();
 
     const unsub = emitter.subscribe(listener);
 
