@@ -46,8 +46,8 @@ const useAsyncFunction = <
 
   useEffect(() => {
     setIsPending(true);
-    setIsError(false);
     setIsSuccess(false);
+    setIsError(false);
 
     let cancelled = false;
 

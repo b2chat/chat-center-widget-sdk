@@ -6,11 +6,10 @@ globalThis.window = dom.window;
 
 const { WidgetMessagePort } = require("../internal/WidgetMessagePort");
 
-const getWidgetMessageEvent = (data = {}) => {
-  return new window.MessageEvent("message", {
+const getWidgetMessageEvent = (data = {}) =>
+  new window.MessageEvent("message", {
     data: { WIDGET_MESSAGE: true, key: 0, ...data },
   });
-};
 
 describe("widgetMessagePort class", () => {
   afterEach(() => {
@@ -27,7 +26,7 @@ describe("widgetMessagePort class", () => {
 
   test(`listen subscribe/[eventName] events`, async () => {
     const wmp = new WidgetMessagePort(window);
-    const fn = jest.fn(console.log);
+    const fn = jest.fn();
 
     wmp.onMessage("subscribe/foo", fn);
 

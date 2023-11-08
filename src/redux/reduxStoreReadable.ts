@@ -3,8 +3,6 @@ import { Readable, readable } from "../utils/store";
 
 type Selector<S, T = any> = (state: S) => T;
 
-const id: Selector<any> = (value) => value;
-
 export const reduxStoreReadable = <S, T>(
   store: Store<S>,
   selector: Selector<S, T>,

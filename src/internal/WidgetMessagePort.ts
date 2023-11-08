@@ -1,3 +1,4 @@
+import { NodePath } from "@babel/core";
 import {
   WidgetMessage,
   WidgetMessageEventType,
@@ -39,7 +40,7 @@ export class WidgetMessagePort extends window.EventTarget {
         origin: { value: origin, enumerable: true },
       });
 
-      debugIncoming(data);
+      debugIncoming(data, origin);
       this.dispatchEvent(widgetEvent);
     }
   };
@@ -91,7 +92,7 @@ export class WidgetMessagePort extends window.EventTarget {
     const ports = options ? [options] : messagePorts;
 
     ports.forEach(({ port, origin }) => {
-      debugOutgoing(message);
+      debugOutgoing(message, origin);
       port.postMessage(message, origin);
     });
   };
@@ -105,16 +106,47 @@ export const getWidgetMessagePort = (() => {
   };
 })();
 
-function debugIncoming(data: WidgetMessage) {
-  const message = `[widget] < ${data.eventType} from ${origin} ${data.key}`;
-
-  if (data.args) console.log(message, ...data.args);
-  else if (data.value) console.log(message, data.value);
+function debugEnabled() {
+  try {
+    return window.localStorage.getItem("widget-debug") === "1";
+  } catch {
+    return false;
+  }
 }
 
-function debugOutgoing(data: WidgetMessage) {
-  const message = `[widget] > ${data.eventType}   to ${origin} ${data.key}`;
+function noop() {}
 
-  if (data.args) console.log(message, ...data.args);
-  else if (data.value) console.log(message, data.value);
-}
+const debugIncoming = debugEnabled()
+  ? (data: WidgetMessage, origin: string) => {
+      const message = `[widget] < ${data.eventType} from ${origin} ${data.key}`;
+
+      if (data.args) console.log(message, ...data.args);
+      else if (data.value) console.log(message, data.value);
+    }
+  : noop;
+
+const debugOutgoing = debugEnabled()
+  ? (data: WidgetMessage, origin: string) => {
+      const message = `[widget] > ${data.eventType} to   ${origin} ${data.key}`;
+
+      if (data.args) console.log(message, ...data.args);
+      else if (data.value) console.log(message, data.value);
+    }
+  : noop;
+
+/*
+ * This allows to MessagesPort messages to debug purposes
+ * use `$widgetDebug = true` to enable debug messages
+ */
+Object.defineProperty(window, "$widgetDebug", {
+  configurable: true,
+  get: debugEnabled,
+  set(enable) {
+    try {
+      window.localStorage.setItem("widget-debug", enable ? "1" : "");
+      window.location.reload();
+    } catch (error) {
+      console.log(error);
+    }
+  },
+});
