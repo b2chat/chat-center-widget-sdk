@@ -29,8 +29,16 @@ export class B2ChatStore {
   }
 
   methods = {
+    /**
+     * Gen an UUID, this can be used to create a message
+     */
     getUUID: (): Promise<string> => callFunction(this.port, "getUUID"),
 
+    /**
+     * find a chat by its name
+     * @param pattern a
+     * @returns
+     */
     findChat: (pattern: string): Promise<Chat[]> =>
       callFunction(this.port, "findChat", pattern),
 
@@ -50,8 +58,14 @@ export class B2ChatStore {
     unassignTag: (chatId: string, tagName: string): Promise<boolean> =>
       callFunction(this.port, "unassignTag", chatId, tagName),
 
-    updateContactInfo: (contactInfo: Partial<ContactInfo>): Promise<boolean> =>
-      callFunction(this.port, "updateContactInfo", contactInfo),
+    updateContactInfo: (
+      contactId: string,
+      contactInfo: Partial<Omit<ContactInfo, "contactId">>
+    ): Promise<boolean> =>
+      callFunction(this.port, "updateContactInfo", contactId, contactInfo),
+
+    getContactInfo: (contactId: string): Promise<ContactInfo> =>
+      callFunction(this.port, "getContactInfo", contactId),
 
     setInputMessageContent: (content: InputMessageContent) => {
       callFunction(this.port, "setInputMessageContent", content);
@@ -64,7 +78,9 @@ export class B2ChatStore {
   };
 
   events = {
-    onChatClosed: bindEvent(this.port, "chatClosed"),
+    onChatClosed: bindEvent<{
+      reason: "closed-by-agent" | "closed-by-contact";
+    }>(this.port, "chatClosed"),
 
     onActiveChatChanged: bindEvent<Chat>(this.port, "activeChatChanged"),
 
@@ -86,6 +102,9 @@ export class B2ChatStore {
   };
 
   state = {
+    /**
+     * List of departments
+     */
     departments: bindProperty<Department[]>(this.port, "departments", []),
 
     agentInfo: bindProperty<Agent>(this.port, "agentInfo", {

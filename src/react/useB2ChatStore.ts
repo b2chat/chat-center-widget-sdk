@@ -1,12 +1,4 @@
-import {
-  useEffect,
-  useInsertionEffect,
-  useLayoutEffect,
-  useMemo,
-  useReducer,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useMemo, useReducer, useState } from "react";
 import { B2ChatStore, getB2ChatStore } from "../B2ChatStore";
 import { Unsubscriber, EventEmitter } from "../utils/eventEmitter";
 import { Readable } from "../utils/store";
@@ -101,6 +93,10 @@ const useB2ChatStore = (options?: UseB2ChatStoreOptions) => {
 
   const setInputMessageContent = store.methods.setInputMessageContent;
 
+  const updateContactInfo = useAsyncFunction(store.methods.updateContactInfo);
+
+  const getContactInfo = useAsyncFunction(store.methods.getContactInfo);
+
   return {
     methods: store.methods,
     state,
@@ -108,13 +104,15 @@ const useB2ChatStore = (options?: UseB2ChatStoreOptions) => {
     getTags,
     assignTag,
     unassignTag,
+    updateContactInfo,
+    getContactInfo,
     setInputMessageContent,
   };
 };
 
 export default useB2ChatStore;
 
-const reducer = (value: number) => value + 1;
+const reducer = (current: number) => current + 1;
 export const useReRender = () => {
   const [, reRender] = useReducer(reducer, 0);
   return reRender;

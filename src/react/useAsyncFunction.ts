@@ -35,7 +35,7 @@ const useAsyncFunction = <
   fn: Fn,
   initialResult?: Awaited<ReturnType<Fn>>
 ): UseAsyncFunctionInstance<Fn, E> => {
-  const [args, setArgs] = useState<Parameters<Fn> | []>([]);
+  const [args, setArgs] = useState<Parameters<Fn> | undefined>();
   const [result, setResult] = useState<Awaited<ReturnType<Fn>> | undefined>(
     initialResult
   );
@@ -45,6 +45,8 @@ const useAsyncFunction = <
   const [isError, setIsError] = useState(false);
 
   useEffect(() => {
+    if (args === undefined) return;
+
     setIsPending(true);
     setIsSuccess(false);
     setIsError(false);

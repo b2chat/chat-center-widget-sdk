@@ -17,7 +17,7 @@ export type StartStopNotifier<T> = (
 ) => void | Stop;
 
 /**
- * This will be called after the last unsubscription for cleanup purposes
+ * This will be called just after the last unsubscription for cleanup purposes
  */
 export type Stop = () => void;
 

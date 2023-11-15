@@ -1,10 +1,27 @@
-import { Stop, Subscriber, Unsubscriber, eventEmitter } from "./eventEmitter";
+import {
+  EventEmitter,
+  Stop,
+  Subscriber,
+  Unsubscriber,
+  eventEmitter,
+} from "./eventEmitter";
 
 export type { Stop, Subscriber, Unsubscriber };
 
 export interface Readable<T = unknown> {
+  /**
+   * subscribe to value changes
+   */
   subscribe: (run: Subscriber<T>) => Unsubscriber;
+  /**
+   * @returns the current store's value
+   */
   get: () => T;
+  /**
+   * Wait for specific value
+   * @param predicate a condition for fulfill the promise
+   * @returns the current value
+   */
   when: (predicate: (value: T) => boolean) => Promise<T>;
 }
 
@@ -19,7 +36,7 @@ export const strictEquals = <T>(currentValue: T, nextValue: T) =>
   currentValue === nextValue;
 
 /**
- * Start and Stop callback lifecycle of the `Writable`
+ * Start and Stop callback lifecycle of the `Writable` or `Readable` observable
  */
 export type StartStopNotifier<T> = (
   set: (value: T) => void,
@@ -31,9 +48,9 @@ export type Updater<T> = (value: T) => T;
 /**
  * Creates a Observable that internally use a `eventEmitter` to store the subscriptions
  * @param initialValue
- * @param start executed after the first subscription to init, it could returns a `stop`
+ * @param start executed just before the first subscription, it could returns a `stop`
  * callback that will be executed after the last unsubscription for cleanup purposes
- * @param equalFn by default `===` will be use to detect when the value has changed
+ * @param equalFn by default strictEquals `===` will be use to detect when the value has changed
  * @returns a writable observable
  */
 export const writable = <T>(
