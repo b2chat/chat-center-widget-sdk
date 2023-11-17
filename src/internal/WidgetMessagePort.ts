@@ -92,8 +92,12 @@ export class WidgetMessagePort extends window.EventTarget {
     const ports = options ? [options] : messagePorts;
 
     ports.forEach(({ port, origin }) => {
-      debugOutgoing(message, origin);
-      port.postMessage(message, origin);
+      try {
+        debugOutgoing(message, origin);
+        port.postMessage(message, origin);
+      } catch (error) {
+        console.log(error);
+      }
     });
   };
 }

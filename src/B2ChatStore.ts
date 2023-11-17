@@ -17,7 +17,11 @@ import {
   InputMessageContent,
 } from "./types";
 
-getWidgetMessagePort().addMessagePort(window.parent, document.referrer);
+const parentOrigin = new URLSearchParams(window.location.search).get(
+  "parent-origin"
+)!;
+
+getWidgetMessagePort().addMessagePort(window.parent, parentOrigin);
 
 export class B2ChatStore {
   port: WidgetMessagePort = getWidgetMessagePort();
