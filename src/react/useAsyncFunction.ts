@@ -9,6 +9,7 @@ export type UseAsyncFunctionInstance<
     | {
         args: Parameters<Fn> | [];
         result: Awaited<ReturnType<Fn>>;
+        error?: E;
         isPending: boolean;
         isSuccess: true;
         isError: false;
@@ -16,6 +17,7 @@ export type UseAsyncFunctionInstance<
     | {
         args: Parameters<Fn> | [];
         error: E;
+        result?: Awaited<ReturnType<Fn>>;
         isPending: boolean;
         isSuccess: false;
         isError: true;

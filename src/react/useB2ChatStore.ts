@@ -97,15 +97,21 @@ const useB2ChatStore = (options?: UseB2ChatStoreOptions) => {
 
   const getContactInfo = useAsyncFunction(store.methods.getContactInfo);
 
+  const getContactInfoProperties = useAsyncFunction(
+    store.methods.getContactInfoProperties
+  );
+
   return {
     methods: store.methods,
     state,
+    ...store.methods,
     findContact,
     getTags,
     assignTag,
     unassignTag,
     updateContactInfo,
     getContactInfo,
+    getContactInfoProperties,
     setInputMessageContent,
   };
 };

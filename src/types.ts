@@ -1,13 +1,11 @@
 export type Message =
   | {
       chatId: string;
-      messageId: string;
       type: "text";
       text: string;
     }
   | {
       chatId: string;
-      messageId: string;
       type: "audio" | "video" | "image";
       caption?: string;
       url: string;
@@ -100,4 +98,18 @@ export type Contact = {
 export type InputMessageContent = {
   chatId: string;
   text: string;
+};
+
+export type ContactInfoAttrProperties = {
+  id: number;
+  name: string;
+  type: "NUMERIC" | "LARGE_TEXT" | "SHORT_TEXT" | "LIST";
+  activated: boolean;
+  required: boolean;
+  order: 0;
+  possibleValues: string[];
+  numeric: number;
+  list: boolean;
+  shortText: boolean;
+  largeText: boolean;
 };

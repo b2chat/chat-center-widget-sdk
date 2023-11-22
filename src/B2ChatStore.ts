@@ -15,6 +15,7 @@ import {
   Tag,
   Department,
   InputMessageContent,
+  ContactInfoAttrProperties,
 } from "./types";
 
 const parentOrigin = new URLSearchParams(window.location.search).get(
@@ -71,6 +72,9 @@ export class B2ChatStore {
     getContactInfo: (contactId: string): Promise<ContactInfo> =>
       callFunction(this.port, "getContactInfo", contactId),
 
+    getContactInfoProperties: (): Promise<ContactInfoAttrProperties[]> =>
+      callFunction(this.port, "getContactInfoProperties"),
+
     setInputMessageContent: (content: InputMessageContent) => {
       callFunction(this.port, "setInputMessageContent", content);
     },
@@ -78,7 +82,7 @@ export class B2ChatStore {
     sendMessage: (
       message: Message
     ): Promise<{ contactId: string; messageId: string }> =>
-      callFunction(this.port, "chatInput/write", message),
+      callFunction(this.port, "sendMessage", message),
   };
 
   events = {
