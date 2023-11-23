@@ -83,15 +83,13 @@ const useB2ChatStore = (options?: UseB2ChatStoreOptions) => {
     };
   }, []);
 
-  const findContact = useAsyncFunction(store.methods.findChat, []);
+  const findChat = useAsyncFunction(store.methods.findChat, []);
 
   const getTags = useAsyncFunction(store.methods.getTags, []);
 
   const assignTag = useAsyncFunction(store.methods.assignTag, false);
 
   const unassignTag = useAsyncFunction(store.methods.unassignTag, false);
-
-  const setInputMessageContent = store.methods.setInputMessageContent;
 
   const updateContactInfo = useAsyncFunction(store.methods.updateContactInfo);
 
@@ -102,17 +100,16 @@ const useB2ChatStore = (options?: UseB2ChatStoreOptions) => {
   );
 
   return {
-    methods: store.methods,
     state,
+    methods: store.methods,
     ...store.methods,
-    findContact,
+    findChat,
     getTags,
     assignTag,
     unassignTag,
     updateContactInfo,
     getContactInfo,
     getContactInfoProperties,
-    setInputMessageContent,
   };
 };
 

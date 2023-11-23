@@ -81,7 +81,10 @@ const useAsyncFunction = <
     };
   }, [args]);
 
-  const callback = useCallback((...args: Parameters<Fn>) => setArgs(args), []);
+  const callback = useCallback((...args: Parameters<Fn>) => {
+    console.log("SALUDOS");
+    setArgs(args);
+  }, []);
 
   const callableObj = useMemo(() => {
     return Object.assign(callback, {

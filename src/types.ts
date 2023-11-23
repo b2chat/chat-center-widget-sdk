@@ -8,7 +8,8 @@ export type Message =
       chatId: string;
       type: "audio" | "video" | "image";
       caption?: string;
-      url: string;
+      url?: string;
+      file?: Blob;
     };
 
 export type MessageState = {
@@ -65,8 +66,20 @@ export type Chat = {
    * This tell as if the current chat is available
    */
   serviceWindow: "ACTIVE" | "EXPIRED";
-  status: "CLOSED" | "OPEN";
+  status:
+    | "CLOSED"
+    | "OPENED"
+    | "PICKED_UP"
+    | "CLOSED_BY_CONTACT"
+    | "LEFT_BY_CONTACT";
+  startTimestamp: number;
+  lastMessageReceivedAt: number;
+  lastMessageSentAt: number;
   viewerUrl: string;
+  accountMessaging: {
+    account: string;
+    alias: string;
+  };
 };
 
 export type ContactInfo = {

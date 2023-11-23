@@ -14,6 +14,7 @@ export type WidgetMessage = (
     }
   | {
       eventType: `call/${string}`;
+      transfer?: Transferable;
       args: any[];
       key: string;
     }

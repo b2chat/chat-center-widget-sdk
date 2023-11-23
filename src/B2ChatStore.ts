@@ -3,11 +3,10 @@ import {
   WidgetMessagePort,
   getWidgetMessagePort,
 } from "./internal/WidgetMessagePort";
-import { callFunction } from "./internal/callFunction";
+import { callAsync, callFunction } from "./internal/callFunction";
 import {
   ContactInfo,
   Message,
-  Contact,
   Chat,
   MessageState,
   Agent,
@@ -41,11 +40,11 @@ export class B2ChatStore {
 
     /**
      * find a chat by its name
-     * @param pattern a
+     * @param pattern
      * @returns
      */
     findChat: (pattern: string): Promise<Chat[]> =>
-      callFunction(this.port, "findChat", pattern),
+      callAsync(this.port, "findChat", pattern),
 
     getTags: async (chatId: string): Promise<Tag[]> => {
       if (!chatId) return [];
@@ -82,7 +81,7 @@ export class B2ChatStore {
     sendMessage: (
       message: Message
     ): Promise<{ contactId: string; messageId: string }> =>
-      callFunction(this.port, "sendMessage", message),
+      callAsync(this.port, "sendMessage", message),
   };
 
   events = {
@@ -141,6 +140,13 @@ export class B2ChatStore {
       },
       viewerUrl: "",
       tags: [],
+      accountMessaging: {
+        account: "",
+        alias: "",
+      },
+      lastMessageReceivedAt: -1,
+      lastMessageSentAt: -1,
+      startTimestamp: -1,
     }),
     activeContactInfo: bindProperty<ContactInfo>(
       this.port,
