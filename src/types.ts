@@ -6,10 +6,9 @@ export type Message =
     }
   | {
       chatId: string;
-      type: "audio" | "video" | "image";
+      type: "media";
       caption?: string;
-      url?: string;
-      file?: Blob;
+      file?: File;
     };
 
 export type MessageState = {
@@ -54,14 +53,7 @@ export type Chat = {
   };
   department?: Omit<Department, "active">;
   tags: Tag[];
-  provider:
-    | "livechat"
-    | "whatsapp"
-    | "telegram"
-    | "instagram"
-    | "facebook"
-    | "b2chatbotapi"
-    | "";
+  provider: MessagingProvider;
   /**
    * This tell as if the current chat is available
    */
@@ -103,11 +95,6 @@ export type ContactInfoAttr = {
   value: string;
 };
 
-export type Contact = {
-  id: string;
-  fullName: string;
-};
-
 export type InputMessageContent = {
   chatId: string;
   text: string;
@@ -125,4 +112,66 @@ export type ContactInfoAttrProperties = {
   list: boolean;
   shortText: boolean;
   largeText: boolean;
+};
+
+export type Pagination = {
+  limit: number;
+  offset: number;
+};
+
+export type MessagingProvider =
+  | "unknown"
+  | "B2CBOTAPI"
+  | "FACEBOOK"
+  | "INSTAGRAM"
+  | "LIVECHAT"
+  | "TELEGRAM"
+  | "WHATSAPP360"
+  | "WHATSAPPBM"
+  | "WHATSAPPOFF";
+
+export type FindChatQuery = Pagination & {
+  chatId?: string;
+  contactName?: string;
+  provider?: MessagingProvider;
+  unanswered?: boolean;
+  tags?: string[];
+};
+
+export type FindChatResponse = {
+  query: FindChatQuery;
+  total: number;
+  data: Chat[];
+};
+export type FindContactQuery = Pagination & {
+  name: string;
+  company?: string;
+};
+
+export type FindContactResponse = {
+  query: FindContactQuery;
+  total: number;
+  data: Contact[];
+};
+
+export type Contact = {
+  id: number;
+  fullName: string;
+  identificationNumber: string;
+  email: string;
+  phoneNumber: string;
+  mobileNumber: string;
+  country: string;
+  province: string;
+  city: string;
+  cityName: string;
+  address: string;
+  company: string;
+  remarks: string;
+  isNewContact: boolean;
+  lastUpdate: string;
+  createAt: string;
+  attributes: ContactInfoAttr;
+  blacklisted: boolean;
+  totalCount: number;
 };

@@ -3,7 +3,7 @@ import {
   WidgetMessagePort,
   getWidgetMessagePort,
 } from "./internal/WidgetMessagePort";
-import { callAsync, callFunction } from "./internal/callFunction";
+import { callFunction } from "./internal/callFunction";
 import {
   ContactInfo,
   Message,
@@ -15,6 +15,10 @@ import {
   Department,
   InputMessageContent,
   ContactInfoAttrProperties,
+  FindContactQuery,
+  FindContactResponse,
+  FindChatQuery,
+  FindChatResponse,
 } from "./types";
 
 const parentOrigin = new URLSearchParams(window.location.search).get(
@@ -43,8 +47,8 @@ export class B2ChatStore {
      * @param pattern
      * @returns
      */
-    findChat: (pattern: string): Promise<Chat[]> =>
-      callAsync(this.port, "findChat", pattern),
+    findChat: (query: FindChatQuery): Promise<FindChatResponse> =>
+      callFunction(this.port, "findChat", query),
 
     getTags: async (chatId: string): Promise<Tag[]> => {
       if (!chatId) return [];
@@ -61,6 +65,9 @@ export class B2ChatStore {
 
     unassignTag: (chatId: string, tagName: string): Promise<boolean> =>
       callFunction(this.port, "unassignTag", chatId, tagName),
+
+    findContact: (query: FindContactQuery): Promise<FindContactResponse> =>
+      callFunction(this.port, "findContact", query),
 
     updateContactInfo: (
       contactId: string,
@@ -81,7 +88,7 @@ export class B2ChatStore {
     sendMessage: (
       message: Message
     ): Promise<{ contactId: string; messageId: string }> =>
-      callAsync(this.port, "sendMessage", message),
+      callFunction(this.port, "sendMessage", message),
   };
 
   events = {
@@ -132,7 +139,7 @@ export class B2ChatStore {
       chatId: "",
       status: "CLOSED",
       serviceWindow: "EXPIRED",
-      provider: "",
+      provider: "unknown",
       contact: {
         contactId: "",
         fullName: "",

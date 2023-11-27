@@ -83,7 +83,15 @@ const useB2ChatStore = (options?: UseB2ChatStoreOptions) => {
     };
   }, []);
 
-  const findChat = useAsyncFunction(store.methods.findChat, []);
+  const findChat = useAsyncFunction(
+    store.methods.findChat,
+    findChatInitialValue
+  );
+
+  const findContact = useAsyncFunction(
+    store.methods.findContact,
+    findContactInitialValue
+  );
 
   const getTags = useAsyncFunction(store.methods.getTags, []);
 
@@ -99,21 +107,37 @@ const useB2ChatStore = (options?: UseB2ChatStoreOptions) => {
     store.methods.getContactInfoProperties
   );
 
+  const sendMessage = useAsyncFunction(store.methods.sendMessage);
+
   return {
     state,
     methods: store.methods,
     ...store.methods,
     findChat,
+    findContact,
     getTags,
     assignTag,
     unassignTag,
     updateContactInfo,
     getContactInfo,
     getContactInfoProperties,
+    sendMessage,
   };
 };
 
 export default useB2ChatStore;
+
+const findContactInitialValue = {
+  data: [],
+  query: { limit: 0, name: "", offset: 0 },
+  total: 0,
+};
+
+const findChatInitialValue = {
+  data: [],
+  query: { limit: 0, offset: 0 },
+  total: 0,
+};
 
 const reducer = (current: number) => current + 1;
 export const useReRender = () => {
