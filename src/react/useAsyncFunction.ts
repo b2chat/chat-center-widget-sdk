@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PromiseCancelled } from "../internal/callFunction";
 
 export type UseAsyncFunctionInstance<
@@ -32,7 +32,7 @@ export interface IUseAsyncFunctionInstance<
 
 const useAsyncFunction = <
   Fn extends (...args: any[]) => Promise<any>,
-  E = unknown
+  E = Error
 >(
   fn: Fn,
   initialResult?: Awaited<ReturnType<Fn>>
@@ -45,6 +45,16 @@ const useAsyncFunction = <
   const [isPending, setIsPending] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
+
+  const mounted = useRef(true);
+
+  useEffect(() => {
+    mounted.current = true;
+
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (args === undefined) return;
@@ -64,7 +74,7 @@ const useAsyncFunction = <
           }
         },
         (reason) => {
-          if (reason === PromiseCancelled) {
+          if (reason === PromiseCancelled || cancelled) {
             cancelled = true;
           } else {
             setError(reason);
@@ -73,7 +83,7 @@ const useAsyncFunction = <
         }
       )
       .finally(() => {
-        if (!cancelled) setIsPending(false);
+        if (mounted.current && !cancelled) setIsPending(false);
       });
 
     return () => {
@@ -81,21 +91,25 @@ const useAsyncFunction = <
     };
   }, [args]);
 
-  const callback = useCallback((...args: Parameters<Fn>) => {
-    console.log("SALUDOS");
-    setArgs(args);
-  }, []);
+  const callback = useCallback(
+    (...args: Parameters<Fn>) => {
+      setArgs(args);
+    },
+    [setArgs]
+  );
 
-  const callableObj = useMemo(() => {
-    return Object.assign(callback, {
-      args,
-      result,
-      error,
-      isPending,
-      isSuccess,
-      isError,
-    });
-  }, [callback, args, result, error, isPending, isSuccess, isError]);
+  const callableObj = useMemo(
+    () =>
+      Object.assign(callback, {
+        args,
+        result,
+        error,
+        isPending,
+        isSuccess,
+        isError,
+      }),
+    [callback, args, result, error, isPending, isSuccess, isError]
+  );
 
   return callableObj as UseAsyncFunctionInstance<Fn, E>;
 };

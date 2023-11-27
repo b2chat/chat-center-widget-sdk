@@ -41,6 +41,7 @@ export class WidgetMessagePort extends window.EventTarget {
       });
 
       debugIncoming(data, origin);
+
       this.dispatchEvent(widgetEvent);
     }
   };
@@ -126,6 +127,7 @@ const debugIncoming = debugEnabled()
 
       if (data.args) console.log(message, ...data.args);
       else if (data.value) console.log(message, data.value);
+      else console.log(message);
     }
   : noop;
 
@@ -135,6 +137,7 @@ const debugOutgoing = debugEnabled()
 
       if (data.args) console.log(message, ...data.args);
       else if (data.value) console.log(message, data.value);
+      else console.log(message);
     }
   : noop;
 

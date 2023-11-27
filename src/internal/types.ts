@@ -27,6 +27,11 @@ export type WidgetMessage = (
       value: any;
       key: string;
     }
+  | {
+      eventType: `error/${string}`;
+      error: any;
+      key: string;
+    }
 ) & {
   [key: string]: any;
 };
