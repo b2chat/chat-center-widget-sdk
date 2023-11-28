@@ -1,10 +1,4 @@
-import {
-  EventEmitter,
-  Stop,
-  Subscriber,
-  Unsubscriber,
-  eventEmitter,
-} from "./eventEmitter";
+import { Stop, Subscriber, Unsubscriber, eventEmitter } from "./eventEmitter";
 
 export type { Stop, Subscriber, Unsubscriber };
 

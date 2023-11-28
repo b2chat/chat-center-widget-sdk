@@ -1,8 +1,6 @@
-import { Unsubscriber } from "../internal/types";
-
 export type Subscriber<T> = (value: T, unsubscribe: Unsubscriber) => void;
 
-export { Unsubscriber };
+export type Unsubscriber = () => void;
 
 export interface EventEmitter<T = unknown> {
   dispatch: (value: T) => void;
