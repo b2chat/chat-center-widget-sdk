@@ -99,7 +99,7 @@ const useB2ChatStore = (options?: UseB2ChatStoreOptions) => {
 
   const unassignTag = useAsyncFunction(store.methods.unassignTag, false);
 
-  const updateContactInfo = useAsyncFunction(store.methods.updateContactInfo);
+  const updateChatInfo = useAsyncFunction(store.methods.updateChatInfo);
 
   const getContactInfo = useAsyncFunction(store.methods.getContactInfo);
 
@@ -118,7 +118,7 @@ const useB2ChatStore = (options?: UseB2ChatStoreOptions) => {
     getTags,
     assignTag,
     unassignTag,
-    updateContactInfo,
+    updateChatInfo,
     getContactInfo,
     getContactInfoProperties,
     sendMessage,

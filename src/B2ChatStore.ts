@@ -69,11 +69,12 @@ export class B2ChatStore {
     findContact: (query: FindContactQuery): Promise<FindContactResponse> =>
       callFunction(this.port, "findContact", query),
 
-    updateContactInfo: (
+    updateChatInfo: (
+      chatId: string,
       contactId: string,
       contactInfo: Partial<Omit<ContactInfo, "contactId">>
     ): Promise<boolean> =>
-      callFunction(this.port, "updateContactInfo", contactId, contactInfo),
+      callFunction(this.port, "updateChatInfo", chatId, contactId, contactInfo),
 
     getContactInfo: (contactId: string): Promise<ContactInfo> =>
       callFunction(this.port, "getContactInfo", contactId),
