@@ -60,11 +60,11 @@ export class B2ChatStore {
       return callFunction(this.port, "assignedTags", chatId);
     },
 
-    assignTag: (chatId: string, tagName: string): Promise<boolean> =>
-      callFunction(this.port, "assignTag", chatId, tagName),
+    assignTag: (chatId: string, tag: Tag): Promise<boolean> =>
+      callFunction(this.port, "assignTag", chatId, tag),
 
-    unassignTag: (chatId: string, tagName: string): Promise<boolean> =>
-      callFunction(this.port, "unassignTag", chatId, tagName),
+    unassignTag: (chatId: string, tag: Tag): Promise<boolean> =>
+      callFunction(this.port, "unassignTag", chatId, tag),
 
     findContact: (query: FindContactQuery): Promise<FindContactResponse> =>
       callFunction(this.port, "findContact", query),
