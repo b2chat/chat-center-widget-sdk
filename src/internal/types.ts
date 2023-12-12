@@ -54,3 +54,13 @@ export type WidgetMessageEvent<
 };
 
 export type Unsubscriber = () => void;
+
+export type MakeExtendable<T> = T & {
+  /**
+   * @param plugin a plugin factory function
+   * @returns `U & T`
+   */
+  extend: <U extends Obj>(plugin: (self: T) => U) => MakeExtendable<T & U>;
+};
+
+type Obj = Record<string | number | symbol, any>;

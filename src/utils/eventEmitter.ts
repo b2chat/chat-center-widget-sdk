@@ -1,3 +1,5 @@
+import { MakeExtendable } from "../internal/types";
+
 export type Subscriber<T> = (value: T, unsubscribe: Unsubscriber) => void;
 
 export type Unsubscriber = () => void;
@@ -6,6 +8,10 @@ export interface EventEmitter<T = unknown> {
   dispatch: (value: T) => void;
   subscribe: (run: Subscriber<T>) => Unsubscriber;
 }
+
+export type EventEmitterExtendable<T = unknown> = MakeExtendable<
+  EventEmitter<T>
+>;
 
 /**
  * Start and Stop callback lifecycle of `eventEmitter`
@@ -26,7 +32,7 @@ export type Stop = () => void;
  */
 export const eventEmitter = <T>(
   start?: StartStopNotifier<T>
-): EventEmitter<T> => {
+): EventEmitterExtendable<T> => {
   const subscribers = new Map<Subscriber<T>, Unsubscriber>();
 
   let stop: Stop | void;
@@ -51,5 +57,11 @@ export const eventEmitter = <T>(
     subscribers.forEach((unsubscriber, run) => run(value, unsubscriber));
   };
 
-  return { subscribe, dispatch };
+  return {
+    extend(plugin) {
+      return { ...this, ...(plugin(this) ?? {}) };
+    },
+    subscribe,
+    dispatch,
+  };
 };

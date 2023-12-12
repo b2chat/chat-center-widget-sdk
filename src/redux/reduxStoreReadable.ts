@@ -1,5 +1,5 @@
 import type { Store } from "redux";
-import { Readable, readable } from "../utils/store";
+import { asReadable, writable } from "../utils/store";
 
 type Selector<S, T = any> = (state: S) => T;
 
@@ -7,28 +7,33 @@ export const reduxStoreReadable = <S, T>(
   store: Store<S>,
   selector: Selector<S, T>,
   dependencies: Selector<S>[] = []
-): Readable<T> => {
+) => {
   let currentState = store.getState();
 
   let depsEvaluated = Array(dependencies.length);
 
   const initialValue = selector(currentState);
 
-  return readable(initialValue, (set) => {
-    const unsubscribeFromRedux = store.subscribe(() => {
-      currentState = store.getState();
+  return asReadable(
+    writable<T>(initialValue, (set) => {
+      const unsubscribeFromRedux = store.subscribe(() => {
+        currentState = store.getState();
 
-      let changed = dependencies.length === 0;
-      for (let i = 0; i < dependencies.length; i++) {
-        const nextValue = dependencies[i](currentState);
+        let changed = dependencies.length === 0;
+        for (let i = 0; i < dependencies.length; i++) {
+          const nextValue = dependencies[i](currentState);
 
-        if (depsEvaluated[i] !== nextValue) changed = true;
+          if (depsEvaluated[i] !== nextValue) changed = true;
 
-        depsEvaluated[i] = nextValue;
-      }
-      if (changed) set(selector(currentState));
-    });
+          depsEvaluated[i] = nextValue;
+        }
+        if (changed) set(selector(currentState));
+      });
 
-    return unsubscribeFromRedux;
-  });
+      return unsubscribeFromRedux;
+    }).extend((self) => ({
+      selector,
+      evaluate: () => self.set(selector(currentState)),
+    }))
+  );
 };

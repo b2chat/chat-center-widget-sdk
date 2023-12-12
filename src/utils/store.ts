@@ -1,5 +1,10 @@
-import { Stop, Subscriber, Unsubscriber, eventEmitter } from "./eventEmitter";
-
+import type { MakeExtendable } from "../internal/types";
+import {
+  type Stop,
+  type Subscriber,
+  type Unsubscriber,
+  eventEmitter,
+} from "./eventEmitter";
 export type { Stop, Subscriber, Unsubscriber };
 
 export interface Readable<T = unknown> {
@@ -18,11 +23,13 @@ export interface Readable<T = unknown> {
    */
   when: (predicate: (value: T) => boolean) => Promise<T>;
 }
+export type ReadableExtendable<T = unknown> = MakeExtendable<Readable<T>>;
 
-export interface Writable<T = unknown> extends Readable<T> {
+export interface Writable<T = unknown> extends Omit<Readable<T>, "extend"> {
   set: (value: T) => void;
   update: (fn: Updater<T>) => void;
 }
+export type WritableExtendable<T = unknown> = MakeExtendable<Writable<T>>;
 
 export type EqualFn<T> = (currentValue: T, nextValue: T) => boolean;
 
@@ -51,7 +58,7 @@ export const writable = <T>(
   initialValue: T,
   start?: StartStopNotifier<T>,
   equalFn: EqualFn<T> = strictEquals
-): Writable<T> => {
+): WritableExtendable<T> => {
   let currentValue = initialValue;
 
   const emitter = eventEmitter<T>(() => start?.(set, update));
@@ -86,8 +93,11 @@ export const writable = <T>(
     });
 
   return {
-    get,
+    extend(plugin) {
+      return { ...this, ...(plugin(this) ?? {}) };
+    },
     set,
+    get,
     update,
     subscribe,
     when,
@@ -106,4 +116,10 @@ export const readable = <T>(
   initialValue: T,
   start?: StartStopNotifier<T>,
   equalFn: EqualFn<T> = strictEquals
-): Readable<T> => writable(initialValue, start, equalFn);
+): ReadableExtendable<T> => writable(initialValue, start, equalFn);
+
+export type AsReadable<T> = T extends Writable<infer U>
+  ? Readable<U> & Omit<T, "set" | "update">
+  : never;
+
+export const asReadable = <T>(store: T) => store as AsReadable<T>;
