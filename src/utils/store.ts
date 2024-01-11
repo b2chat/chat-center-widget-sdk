@@ -1,4 +1,4 @@
-import type { MakeExtendable } from "../internal/types";
+import { extendImpl, type MakeExtendable } from "../internal/types";
 import {
   type Stop,
   type Subscriber,
@@ -94,7 +94,7 @@ export const writable = <T>(
 
   return {
     extend(plugin) {
-      return { ...this, ...(plugin(this) ?? {}) };
+      return extendImpl(this, plugin);
     },
     set,
     get,

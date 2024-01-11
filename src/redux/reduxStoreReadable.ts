@@ -9,13 +9,12 @@ export const reduxStoreReadable = <S, T>(
   dependencies: Selector<S>[] = []
 ) => {
   let currentState = store.getState();
-
-  let depsEvaluated = Array(dependencies.length);
-
   const initialValue = selector(currentState);
 
   return asReadable(
     writable<T>(initialValue, (set) => {
+      let depsEvaluated = Array(dependencies.length);
+
       const unsubscribeFromRedux = store.subscribe(() => {
         currentState = store.getState();
 
@@ -33,7 +32,7 @@ export const reduxStoreReadable = <S, T>(
       return unsubscribeFromRedux;
     }).extend((self) => ({
       selector,
-      evaluate: () => self.set(selector(currentState)),
+      evaluate: () => self.set(selector(store.getState())),
     }))
   );
 };

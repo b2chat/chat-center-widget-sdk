@@ -1,4 +1,4 @@
-import { MakeExtendable } from "../internal/types";
+import { MakeExtendable, extendImpl } from "../internal/types";
 
 export type Subscriber<T> = (value: T, unsubscribe: Unsubscriber) => void;
 
@@ -59,7 +59,7 @@ export const eventEmitter = <T>(
 
   return {
     extend(plugin) {
-      return { ...this, ...(plugin(this) ?? {}) };
+      return extendImpl(this, plugin);
     },
     subscribe,
     dispatch,

@@ -58,9 +58,23 @@ export type Unsubscriber = () => void;
 export type MakeExtendable<T> = T & {
   /**
    * @param plugin a plugin factory function
-   * @returns `U & T`
+   * @returns `T & U`
    */
   extend: <U extends Obj>(plugin: (self: T) => U) => MakeExtendable<T & U>;
 };
+
+export function extendImpl(target: any, plugin: (self: any) => any): any {
+  const obj = plugin(target) ?? {};
+  for (const key in obj) {
+    if (Object.hasOwn(obj, key))
+      Object.defineProperty(target, key, {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        value: obj[key],
+      });
+  }
+  return target;
+}
 
 type Obj = Record<string | number | symbol, any>;
