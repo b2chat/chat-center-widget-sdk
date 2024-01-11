@@ -2,22 +2,45 @@
 
 This is small lib that allows interoperabilty with [B2Chat Console](https://app.b2chat.io/agent/chat])
 
-### Index
+## Getting start
 
 - [Installation](#Installation)
 - [Usage](#Usage)
-- [Utils](#Utils)
-  - [EventEmitter](#EventEmitter)
-  - [Writable](#Writable)
-  - [Readable](#Readable)
-  - [useAsyncFunction](#UseAsyncFunction)
-- [B2ChatStore](#B2ChatStore)
-  - [Properties](#Properties)
-  - [Events](#Events)
-  - [Methods](#Methods)
+
+## [Core](#Core)
+
+- [EventEmitter](#EventEmitter)
+- [Writable](#Writable)
+- [Readable](#Readable)
+- [React hook useAsyncFunction](#React%20Hook%20UseAsyncFunction)
+
+## [B2ChatStore](#B2ChatStore)
+
+- [Properties](#Properties)
+  - [activeChat](#activeChat:%20Readable<Chat>)
+  - [agentInfo](#agentInfo:%20Readable<AgentInfo>)
+  - [departments](#departments:%20Readable<Department[]>)
+  - [inputMessageContent](#inputMessageContent:%20InputMessageContent)
+- [Events](#Events)
+  - [chatClosed](#chatClosed)
+- [Methods](#Methods)
+  - [findChat](#findChat)
+  - [assignedTags](#assignedTags)
+  - [getTags](#getTags)
+  - [assignTags](#assignTags)
+  - [unassignTags](#unassignTags)
+  - [setInputMessageContent](#setInputMessageContent)
+  - [updateChatInfo](#updateChatInfo)
+  - [getContactInfoProperties](#getContactInfoProperties)
+  - [getUUID](#getUUID)
+  - [sendMessage](#sendMessage)
+  - [findContact](#findContact)
   - [Types](#Types)
 
-### Installation
+<br>
+<br>
+
+# Installation
 
 We recommend to use this **React** [template](https://github.com/b2chat/cra-template-b2chat-widget) to bootstrap a widget
 
@@ -67,11 +90,11 @@ const App = () => {
 };
 ```
 
-## Utils
+# Core
 
-### These are utils that are available for public usage and are the core of this library.
+These are utils that are available for public usage and are the core of this SDK.
 
-## EventEmitter
+## EventEmitter [➡️]()
 
 ```ts
 import { eventEmitter } from "@b2chatorg/chat-center-widget-sdk/dist/utils/eventEmitter";
@@ -79,9 +102,9 @@ import { eventEmitter } from "@b2chatorg/chat-center-widget-sdk/dist/utils/event
 const eventEmitter: <T>(start?: StartStopNotifier<T>) => EventEmitter<T>;
 ```
 
-A function that create a minimal **EventEmitter** to dispatch events. It gets created as an object with `dispatch` and `subscribe` methods.
+A function that create a minimal **EventEmitter** to dispatch a single event type. It is an object with `dispatch` and `subscribe` methods.
 
-**`EventEmitter.subscribe`, `EventEmitter.dispatch`**
+#### `subscribe`, `dispatch` Methods
 
 ```ts
 // start: StartStopNotifier
@@ -96,13 +119,13 @@ unsubscribe(); // unsubscribe
 emitter.dispatch("world"); // does nothing
 ```
 
-**`start: StartStopNotifier`**
+#### `start/stop` Lifecycle
 
-`start` is executed just before the first subscription, it could returns a `stop` callback that will be executed after the last unsubscription for cleanup purposes
+`start` is executed just before the first subscription, it could returns a `stop` callback that will be executed by the emitter after the last unsubscription.
 
 ```ts
+// `start` callback
 const emitter = eventEmitter<string>((dispatch) => {
-  // `start` callback
   console.log("first subscriber");
 
   // `stop` callback
@@ -120,7 +143,7 @@ emitter.dispatch("hello"); // logs 'hello'
 unsub(); // will exec `stop` callback and logs 'no subscribers'
 ```
 
-## Writable
+# Writable
 
 ```ts
 export const writable = <T>(
@@ -132,7 +155,9 @@ export const writable = <T>(
 
 It creates a mutable value **observable**
 
-### Example:
+### Usage
+
+#### `subscribe`, `get`, `set` and `update`
 
 ```ts
 import { writable } from "@b2chatorg/chat-center-widget-sdk/dist/utils/store";
@@ -149,9 +174,9 @@ count.update((current) => current + 1); // increments count and logs '2'
 unsub(); // unobserve count
 ```
 
-#### `Writable.when(predicate)`
+#### `when(predicate)`
 
-It waits for condition
+It waits for condition to be fulfill
 
 ```ts
 const counter = writable(0, (set, update) => {
@@ -170,7 +195,7 @@ async waitUntil10() {
 waitUntil10()
 ```
 
-## Readable
+# Readable
 
 ```ts
 export const readable = <T>(
@@ -180,7 +205,7 @@ export const readable = <T>(
 ): Readable<T> => writable(initialValue, start, equalFn);
 ```
 
-Creates a non-mutable value **observable**
+Similar to a `Writable` but it is a **non-mutable observable**
 
 ### Example:
 
@@ -200,7 +225,7 @@ const unsub = ticktock.subscribe((value) => console.log(value)); // logs 'tick' 
 unsub(); // unobserve tictock and stop ticktock
 ```
 
-### UseAsyncFunction
+# React Hook `UseAsyncFunction`
 
 ```ts
 const useAsyncFunction = <
@@ -224,12 +249,20 @@ type UseAsyncFunctionInstance<
 };
 ```
 
-This is a React hook to manage async calls, it takes a async `fn` and optionally an `initialResult` to use as first result
+This is a React hook to manage async calls, it takes a async `fn` and optionally an `initialResult` to use as initial value for result prop
 
-### Example:
+### Usage
 
 ```tsx
 import useAsyncFunction from "@b2chatorg/chat-center-widget-sdk/dist/react/useAsyncFunction";
+
+const doLogin = async (user: string) => {
+  await new Promise(r => setTimeout(r, 2000)); // wait 2 seg
+
+  if (user === "david") return { user };
+
+  throw new Error("Unknown user");
+};
 
 const App = () => {
   const login = useAsyncFunction(doLogin);
@@ -247,23 +280,17 @@ const App = () => {
   );
 };
 
-const doLogin = async (user: string) => {
-  await new Promise(r => setTimeout(r, 2000)); // wait 2 seg
-
-  if (user === "david") {
-    return { user };
-  }
-  throw new Error("Unknown user");
-};
 ```
 
-## B2ChatStore
+</br>
 
-**B2ChatStore** is simply a set of _properties_, _events_ and _methods_ that enable subscribe, listen or take actions inside the B2Chat console. It is agnostic to any **UI** library but it there are some pretty easy utils to work with React.
+# B2ChatStore
+
+**B2ChatStore** is simply a set of _properties_, _events_ and _methods_ that allow subscribe, listen or take actions inside the B2Chat console. It is agnostic to any **UI** library but there are some pretty easy utils to work with React.
 
 **JS** vanilla
 
-```js
+```ts
 import { getB2ChatStore } from "@b2chatorg/chat-center-widget-sdk";
 
 /// get b2chat store instance
@@ -276,11 +303,13 @@ const unsub = store.state.activeChat.subscribe((chat) => {
 
 // stop receive changes
 unsub();
+
+const result = await store.methods.findChat({ contactName: "foo" }); // find a chat in the current tray
 ```
 
 With **React** library
 
-```jsx
+```tsx
 import { useEffect, useState } from "react";
 import { useB2ChatStore } from "@b2chatorg/chat-center-widget-sdk/dist/react";
 
@@ -296,6 +325,97 @@ const App = () => {
   );
 };
 ```
+
+# Properties
+
+## `activeChat: Readable<Chat>`
+
+It contains the Chat actually selected by the agent.
+
+### Example
+
+```tsx
+const { state } = getB2ChatStore();
+state.activeChat.subscribe((activeChat) => {
+  console.log(activeChat.chatId);
+});
+
+// or with React
+const App = () => {
+  const { state } = useB2ChatStore();
+  return <div>{state.activeChat.chatId}</div>;
+};
+```
+
+## `agentInfo: Readable<AgentInfo>`
+
+It has the basic information about the agent and the departments which it belongs.
+If you want to search for an specific chat use : [findChat](#findChat:%20)
+
+### Example
+
+```tsx
+const { state } = getB2ChatStore();
+state.agentInfo.subscribe((agentInfo) => {
+  console.log(agentInfo.username);
+});
+
+// or with React
+const App = () => {
+  const { state } = useB2ChatStore();
+  return <div>{state.agentInfo.username}</div>;
+};
+```
+
+## `departments: Readable<Department[]>`
+
+It has the list the all posible departments for this merchant
+
+### Example
+
+```tsx
+const { state } = getB2ChatStore();
+state.departments.subscribe((departments) => {
+  departments.forEach((item) => console.log(item.tagName));
+});
+
+// or with React
+const App = () => {
+  const { state } = useB2ChatStore();
+  return (
+    <>
+      {state.departments.map((item) => (
+        <div>{item.tagName}</div>
+      ))}
+    </>
+  );
+};
+```
+
+## `inputMessageContent: InputMessageContent`
+
+It has the console input message. See [setInputMessageContent]() to modify its value
+
+### Example
+
+```tsx
+const { state } = getB2ChatStore();
+state.inputMessageContent.subscribe((content) => {
+  console.log(content.chatId, content.text);
+});
+
+// or with React
+const App = () => {
+  const { state } = useB2ChatStore();
+  return <div>{state.inputMessageContent.text}</div>;
+};
+```
+
+<br>
+
+# Events
+
+## `onChatClosed: Emitter`
 
 ## Types
 
