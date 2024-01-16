@@ -25,8 +25,8 @@ This is small lib that allows interoperabilty with [B2Chat Console](https://app.
   - [chatClosed](#chatClosed)
 - [Methods](#Methods)
   - [findChat](#findChat)
-  - [assignedTags](#assignedTags)
   - [getTags](#getTags)
+  - [assignedTags](#assignedTags)
   - [assignTags](#assignTags)
   - [unassignTags](#unassignTags)
   - [setInputMessageContent](#setInputMessageContent)
@@ -416,6 +416,22 @@ const App = () => {
 # Events
 
 ## `onChatClosed: Emitter`
+
+event emitted when a chat is closed wether by agent or contact
+
+# Methods
+
+## `findChat: (query: FindChatQuery) => Promise<FindChatResponse>`
+
+Find a chat by name, chatId or tags.
+
+> The query can be omitted to traverse through all chats
+
+```ts
+const { methods } = getB2ChatStore();
+const response = await findChat({ contactName: "jean", limit: 10 });
+console.log(response.data);
+```
 
 ## Types
 

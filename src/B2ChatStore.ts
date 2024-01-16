@@ -42,6 +42,26 @@ export class B2ChatStore {
      */
     getUUID: (): Promise<string> => callFunction(this.port, "getUUID"),
 
+    getChatTags: (chatId: string): Promise<(Tag & { assigned: boolean })[]> =>
+      callFunction(this.port, "getChatTags", chatId),
+
+    assignChatTag: (chatId: string, tag: Tag): Promise<boolean> =>
+      callFunction(this.port, "assignChatTag", chatId, tag),
+
+    unassignChatTag: (chatId: string, tag: Tag): Promise<boolean> =>
+      callFunction(this.port, "unassignChatTag", chatId, tag),
+
+    getContactTags: (
+      contactId: string
+    ): Promise<(Tag & { assigned: boolean })[]> =>
+      callFunction(this.port, "getContactTags", contactId),
+
+    assignContactTag: (contactId: string, tag: Tag): Promise<boolean> =>
+      callFunction(this.port, "assignContactTag", contactId, tag),
+
+    unassignContactTag: (contactId: string, tag: Tag): Promise<boolean> =>
+      callFunction(this.port, "unassignContactTag", contactId, tag),
+
     /**
      * find a chat by its name
      * @param pattern
@@ -49,22 +69,6 @@ export class B2ChatStore {
      */
     findChat: (query: FindChatQuery): Promise<FindChatResponse> =>
       callFunction(this.port, "findChat", query),
-
-    getTags: async (chatId: string): Promise<Tag[]> => {
-      if (!chatId) return [];
-      return callFunction(this.port, "getTags", chatId);
-    },
-
-    assignedTags: async (chatId: string): Promise<Tag[]> => {
-      if (!chatId) return [];
-      return callFunction(this.port, "assignedTags", chatId);
-    },
-
-    assignTag: (chatId: string, tag: Tag): Promise<boolean> =>
-      callFunction(this.port, "assignTag", chatId, tag),
-
-    unassignTag: (chatId: string, tag: Tag): Promise<boolean> =>
-      callFunction(this.port, "unassignTag", chatId, tag),
 
     findContact: (query: FindContactQuery): Promise<FindContactResponse> =>
       callFunction(this.port, "findContact", query),

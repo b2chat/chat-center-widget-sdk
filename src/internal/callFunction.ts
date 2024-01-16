@@ -11,7 +11,10 @@ export function callFunction<Args extends any[], R>(
 ) {
   return new Promise<R>((resolve, reject) => {
     const subscriptions: Unsubscribe[] = [];
-    const cleanup = () => subscriptions.forEach((unsub) => unsub());
+    const cleanup = () => {
+      const call = (fn: () => any) => fn();
+      subscriptions.forEach(call);
+    };
     const key = uniqueKey();
 
     subscriptions.push(

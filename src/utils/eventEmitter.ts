@@ -1,4 +1,4 @@
-import { MakeExtendable, extendImpl } from "../internal/types";
+import { Extendable, extendImpl } from "../internal/extendable";
 
 export type Subscriber<T> = (value: T, unsubscribe: Unsubscriber) => void;
 
@@ -9,9 +9,7 @@ export interface EventEmitter<T = unknown> {
   subscribe: (run: Subscriber<T>) => Unsubscriber;
 }
 
-export type EventEmitterExtendable<T = unknown> = MakeExtendable<
-  EventEmitter<T>
->;
+export type EventEmitterExtendable<T = unknown> = Extendable<EventEmitter<T>>;
 
 /**
  * Start and Stop callback lifecycle of `eventEmitter`

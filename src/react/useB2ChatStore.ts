@@ -93,12 +93,6 @@ const useB2ChatStore = (options?: UseB2ChatStoreOptions) => {
     findContactInitialValue
   );
 
-  const getTags = useAsyncFunction(store.methods.getTags, []);
-
-  const assignTag = useAsyncFunction(store.methods.assignTag, false);
-
-  const unassignTag = useAsyncFunction(store.methods.unassignTag, false);
-
   const updateChatInfo = useAsyncFunction(store.methods.updateChatInfo);
 
   const getContactInfo = useAsyncFunction(store.methods.getContactInfo);
@@ -109,19 +103,30 @@ const useB2ChatStore = (options?: UseB2ChatStoreOptions) => {
 
   const sendMessage = useAsyncFunction(store.methods.sendMessage);
 
+  const getChatTags = useAsyncFunction(store.methods.getChatTags);
+  const assignChatTag = useAsyncFunction(store.methods.assignChatTag);
+  const unassignChatTag = useAsyncFunction(store.methods.unassignChatTag);
+
+  const getContactTags = useAsyncFunction(store.methods.getContactTags);
+  const assignContactTag = useAsyncFunction(store.methods.assignContactTag);
+  const unassignContactTag = useAsyncFunction(store.methods.unassignContactTag);
+
   return {
     state,
     methods: store.methods,
     ...store.methods,
     findChat,
     findContact,
-    getTags,
-    assignTag,
-    unassignTag,
     updateChatInfo,
     getContactInfo,
     getContactInfoProperties,
     sendMessage,
+    getChatTags,
+    assignChatTag,
+    unassignChatTag,
+    getContactTags,
+    assignContactTag,
+    unassignContactTag,
   };
 };
 

@@ -34,12 +34,10 @@ export type Department = {
 };
 
 export type Tag = {
-  tagName: string;
+  id: string;
+  name: string;
   emoji: string;
   color: string;
-  assigned: boolean;
-} & {
-  [key: string]: string;
 };
 
 export type AgentOnlineStatus = "available" | "unavailable";

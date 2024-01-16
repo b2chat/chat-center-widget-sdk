@@ -1,4 +1,4 @@
-import { extendImpl, type MakeExtendable } from "../internal/types";
+import { extendImpl, type Extendable } from "../internal/extendable";
 import {
   type Stop,
   type Subscriber,
@@ -23,13 +23,13 @@ export interface Readable<T = unknown> {
    */
   when: (predicate: (value: T) => boolean) => Promise<T>;
 }
-export type ReadableExtendable<T = unknown> = MakeExtendable<Readable<T>>;
+export type ReadableExtendable<T = unknown> = Extendable<Readable<T>>;
 
 export interface Writable<T = unknown> extends Omit<Readable<T>, "extend"> {
   set: (value: T) => void;
   update: (fn: Updater<T>) => void;
 }
-export type WritableExtendable<T = unknown> = MakeExtendable<Writable<T>>;
+export type WritableExtendable<T = unknown> = Extendable<Writable<T>>;
 
 export type EqualFn<T> = (currentValue: T, nextValue: T) => boolean;
 
@@ -67,7 +67,7 @@ export const writable = <T>(
 
   const set = (nextValue: T) => {
     if (!equalFn(currentValue, nextValue)) {
-      currentValue = nextValue!;
+      currentValue = nextValue;
       emitter.dispatch(currentValue);
     }
   };
