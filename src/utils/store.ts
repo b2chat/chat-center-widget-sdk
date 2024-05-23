@@ -33,8 +33,14 @@ export type WritableExtendable<T = unknown> = Extendable<Writable<T>>;
 
 export type EqualFn<T> = (currentValue: T, nextValue: T) => boolean;
 
-export const strictEquals = <T>(currentValue: T, nextValue: T) =>
-  currentValue === nextValue;
+export const safeEqual = <T>(currentValue: T, nextValue: T) =>
+  !safeNotEqual(currentValue, nextValue);
+
+export function safeNotEqual(a: any, b: any) {
+  return a != a
+    ? b == b
+    : a !== b || (a && typeof a === "object") || typeof a === "function";
+}
 
 /**
  * Start and Stop callback lifecycle of the `Writable` or `Readable` observable
@@ -57,7 +63,7 @@ export type Updater<T> = (value: T) => T;
 export const writable = <T>(
   initialValue: T,
   start?: StartStopNotifier<T>,
-  equalFn: EqualFn<T> = strictEquals
+  equalFn: EqualFn<T> = safeEqual
 ): WritableExtendable<T> => {
   let currentValue = initialValue;
 
@@ -115,7 +121,7 @@ export const writable = <T>(
 export const readable = <T>(
   initialValue: T,
   start?: StartStopNotifier<T>,
-  equalFn: EqualFn<T> = strictEquals
+  equalFn: EqualFn<T> = safeEqual
 ): ReadableExtendable<T> => writable(initialValue, start, equalFn);
 
 export type AsReadable<T> = T extends Writable<infer U>

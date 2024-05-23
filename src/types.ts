@@ -50,7 +50,6 @@ export type Chat = {
     avatarUrl: string;
   };
   department?: Omit<Department, "active">;
-  tags: Tag[];
   provider: MessagingProvider;
   /**
    * This tell as if the current chat is available
@@ -151,6 +150,58 @@ export type FindContactResponse = {
   total: number;
   data: Contact[];
 };
+
+export type FindChannelQuery = Pagination & {
+  providers?: MessagingProvider[];
+  search?: string;
+};
+
+export type FindChannelResponse = {
+  query: FindChannelQuery;
+  total: number;
+  data: Channel[];
+};
+
+export type Channel = {
+  channelId: number;
+  toMonitor: boolean;
+  username: string;
+  provider: MessagingProvider;
+  alias: string;
+  identifier?: string;
+  status: "ACTIVE" | "SUSPENDED";
+  active: boolean;
+  notSuspended: boolean;
+  officialWSProvider: boolean;
+  broadcastOnly: boolean;
+};
+
+export type TemplateMessage = {
+  id: number;
+  name: string;
+  nameSpace: string;
+  messageWithPlaceHolders: string;
+  type: null;
+  byDefault: boolean;
+  defaultToResume: boolean;
+  parameters: {
+    code: string;
+    order: number;
+  }[];
+  createdAt: number;
+  status: "ACTIVE" | "INACTIVE";
+  channelId: number;
+  language: "es";
+  category: "MARKETING";
+  templateComponent: null;
+  staticHeaderUrl: null;
+};
+
+export type FindTemplatesQuery = {
+  channelId: string | number;
+};
+
+export type FindTemplatesResponse = TemplateMessage[];
 
 export type Contact = {
   id: number;

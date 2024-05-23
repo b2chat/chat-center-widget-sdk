@@ -31,5 +31,8 @@
   ],
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "jose": "^5.3.0"
   }
 }

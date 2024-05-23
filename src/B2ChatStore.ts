@@ -19,7 +19,12 @@ import {
   FindContactResponse,
   FindChatQuery,
   FindChatResponse,
+  FindChannelResponse,
+  FindChannelQuery,
+  FindTemplatesQuery,
+  FindTemplatesResponse,
 } from "./types";
+import { decodeJwt } from "jose";
 
 const parentOrigin = new URLSearchParams(window.location.search).get(
   "parent-origin"
@@ -73,6 +78,12 @@ export class B2ChatStore {
     findContact: (query: FindContactQuery): Promise<FindContactResponse> =>
       callFunction(this.port, "findContact", query),
 
+    findChannel: (query: FindChannelQuery): Promise<FindChannelResponse> =>
+      callFunction(this.port, "findChannel", query),
+
+    findTemplate: (query: FindTemplatesQuery): Promise<FindTemplatesResponse> =>
+      callFunction(this.port, "findTemplate", query),
+
     updateChatInfo: (
       chatId: string,
       contactId: string,
@@ -94,6 +105,18 @@ export class B2ChatStore {
       message: Message
     ): Promise<{ contactId: string; messageId: string }> =>
       callFunction(this.port, "sendMessage", message),
+
+    getJWTSecret: async () => {
+      type JWT = {
+        token: string;
+        payload: Record<string, any>;
+      };
+      const { token }: JWT = await callFunction(this.port, "getJWTSecret");
+      return {
+        token,
+        payload: decodeJwt(token),
+      };
+    },
   };
 
   events = {
@@ -151,7 +174,6 @@ export class B2ChatStore {
         avatarUrl: "",
       },
       viewerUrl: "",
-      tags: [],
       accountMessaging: {
         account: "",
         alias: "",
@@ -166,6 +188,16 @@ export class B2ChatStore {
       {
         attributes: [],
       } as unknown as ContactInfo
+    ),
+    activeContactTags: bindProperty<(Tag & { assigned: boolean })[]>(
+      this.port,
+      "activeContactTags",
+      []
+    ),
+    activeChatTags: bindProperty<(Tag & { assigned: boolean })[]>(
+      this.port,
+      "activeChatTags",
+      []
     ),
     inputMessageContent: bindProperty<InputMessageContent>(
       this.port,

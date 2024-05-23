@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PromiseCancelled } from "../internal/callFunction";
+import useUnmounted from "./useUnmounted";
 
 export type UseAsyncFunctionInstance<
   Fn extends (...args: any[]) => Promise<any>,
@@ -37,6 +38,7 @@ const useAsyncFunction = <
   fn: Fn,
   initialResult?: Awaited<ReturnType<Fn>>
 ): UseAsyncFunctionInstance<Fn, E> => {
+  const unmounted = useUnmounted();
   const [args, setArgs] = useState<Parameters<Fn> | undefined>();
   const [result, setResult] = useState<Awaited<ReturnType<Fn>> | undefined>(
     initialResult
@@ -45,16 +47,6 @@ const useAsyncFunction = <
   const [isPending, setIsPending] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
-
-  const mounted = useRef(true);
-
-  useEffect(() => {
-    mounted.current = true;
-
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
 
   useEffect(() => {
     if (args === undefined) return;
@@ -68,22 +60,28 @@ const useAsyncFunction = <
     fn(...args)
       .then(
         (result) => {
+          if (unmounted()) return;
           if (!cancelled) {
             setResult(result);
             setIsSuccess(true);
           }
         },
         (reason) => {
+          if (unmounted()) return;
           if (reason === PromiseCancelled || cancelled) {
             cancelled = true;
           } else {
             setError(reason);
             setIsError(true);
           }
+          console.error(reason);
         }
       )
       .finally(() => {
-        if (mounted.current && !cancelled) setIsPending(false);
+        if (unmounted()) return;
+        if (!cancelled) {
+          setIsPending(false);
+        }
       });
 
     return () => {

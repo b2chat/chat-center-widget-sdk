@@ -111,12 +111,20 @@ const useB2ChatStore = (options?: UseB2ChatStoreOptions) => {
   const assignContactTag = useAsyncFunction(store.methods.assignContactTag);
   const unassignContactTag = useAsyncFunction(store.methods.unassignContactTag);
 
+  const findChannel = useAsyncFunction(store.methods.findChannel);
+  const findTemplate = useAsyncFunction(store.methods.findTemplate);
+
+  const getJWTSecret = useAsyncFunction(store.methods.getJWTSecret);
+
   return {
     state,
     methods: store.methods,
     ...store.methods,
     findChat,
+    getJWTSecret,
     findContact,
+    findChannel,
+    findTemplate,
     updateChatInfo,
     getContactInfo,
     getContactInfoProperties,

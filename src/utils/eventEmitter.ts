@@ -38,7 +38,6 @@ export const eventEmitter = <T>(
   const subscribe = (run: Subscriber<T>): Unsubscriber => {
     const unsubscriber = () => {
       subscribers.delete(run);
-
       if (subscribers.size === 0) stop?.();
     };
 
