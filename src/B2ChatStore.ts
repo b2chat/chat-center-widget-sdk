@@ -117,6 +117,22 @@ export class B2ChatStore {
         payload: decodeJwt(token),
       };
     },
+
+    /**
+     * Get a JWT token for installing an integration store app.
+     * @param appId - The app ID from the integration store
+     * @returns JWT installation token to use as Authorization header
+     */
+    getJwtInstallationApp: (appId: string): Promise<{ token: string }> =>
+      callFunction(this.port, "getJwtInstallationApp", appId),
+
+    /**
+     * Get the MercadoPago app ID from the loaded integration apps.
+     * @returns The MercadoPago app ID
+     * @throws "MercadoPago app not found" if the app doesn't exist in the store
+     */
+    getMercadoPagoAppId: (): Promise<{ appId: string }> =>
+      callFunction(this.port, "getMercadoPagoAppId"),
   };
 
   events = {
