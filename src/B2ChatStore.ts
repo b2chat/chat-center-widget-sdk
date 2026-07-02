@@ -23,6 +23,7 @@ import {
   FindChannelQuery,
   FindTemplatesQuery,
   FindTemplatesResponse,
+  ThemeMode,
 } from "./types";
 import { decodeJwt } from "jose";
 
@@ -141,6 +142,8 @@ export class B2ChatStore {
     onTagsChanged: bindEvent<{ chatId: string }>(this.port, "tagsChanged"),
 
     onChatInputContentChanged: bindEvent(this.port, "inputMessageChanged"),
+
+    onThemeModeChange: bindEvent<ThemeMode>(this.port, "themeModeChange"),
   };
 
   state = {
@@ -204,6 +207,8 @@ export class B2ChatStore {
       "inputMessageContent",
       { chatId: "", text: "" }
     ),
+
+    themeMode: bindProperty<ThemeMode>(this.port, "themeMode", ThemeMode.Light),
   };
 }
 
