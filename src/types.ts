@@ -42,6 +42,11 @@ export type Tag = {
 
 export type AgentOnlineStatus = "available" | "unavailable";
 
+export enum ThemeMode {
+  Light = "light",
+  Dark = "dark",
+}
+
 export type Chat = {
   chatId: string;
   contact: {
