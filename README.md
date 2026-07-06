@@ -1,4 +1,9 @@
-## @b2chatorg/chat-center-widget-sdk
+## @b2chat/chat-center-widget-sdk
+
+> **📦 Package moved:** This package was previously published as
+> `@b2chatorg/chat-center-widget-sdk`. It now lives under the official B2Chat organization
+> scope as **`@b2chat/chat-center-widget-sdk`**. Please update your imports and
+> `package.json` dependency accordingly — the old `@b2chatorg` package is no longer maintained.
 
 This is small lib that allows interoperabilty with [B2Chat Console](https://app.b2chat.io/agent/chat])
 
@@ -47,7 +52,7 @@ We recommend to use this **React** [template](https://github.com/b2chat/cra-temp
 But if you prefer use a different UI lib than **React** as **Svelte** or **Vue**, only need to install this package:
 
 ```sh
-npm install @b2chatorg/chat-center-widget-sdk
+npm install @b2chat/chat-center-widget-sdk
 ```
 
 and start the development server at **3010** port.
@@ -57,7 +62,7 @@ and start the development server at **3010** port.
 You can subscribe to properties.
 
 ```js
-import { getB2ChatStore } from "@b2chatorg/chat-center-widget-sdk";
+import { getB2ChatStore } from "@b2chat/chat-center-widget-sdk";
 
 /// get b2chat store instance
 const store = getB2ChatStore();
@@ -75,7 +80,7 @@ You can do the same with React.
 
 ```jsx
 import { useEffect, useState } from "react";
-import { useB2ChatStore } from "@b2chatorg/chat-center-widget-sdk/dist/react";
+import { useB2ChatStore } from "@b2chat/chat-center-widget-sdk/dist/react";
 
 const App = () => {
   const { state } = useB2ChatStore();
@@ -97,7 +102,7 @@ These are utils that are available for public usage and are the core of this SDK
 ## EventEmitter [➡️]()
 
 ```ts
-import { eventEmitter } from "@b2chatorg/chat-center-widget-sdk/dist/utils/eventEmitter";
+import { eventEmitter } from "@b2chat/chat-center-widget-sdk/dist/utils/eventEmitter";
 
 const eventEmitter: <T>(start?: StartStopNotifier<T>) => EventEmitter<T>;
 ```
@@ -160,7 +165,7 @@ It creates a mutable value **observable**
 #### `subscribe`, `get`, `set` and `update`
 
 ```ts
-import { writable } from "@b2chatorg/chat-center-widget-sdk/dist/utils/store";
+import { writable } from "@b2chat/chat-center-widget-sdk/dist/utils/store";
 
 const count = writable<number>(0);
 
@@ -210,7 +215,7 @@ Similar to a `Writable` but it is a **non-mutable observable**
 ### Example:
 
 ```ts
-import { readable } from "@b2chatorg/chat-center-widget-sdk/dist/utils/store";
+import { readable } from "@b2chat/chat-center-widget-sdk/dist/utils/store";
 
 const ticktock = readable("tick", (set, update) => {
   const interval = setInterval(() => {
@@ -254,7 +259,7 @@ This is a React hook to manage async calls, it takes a async `fn` and optionally
 ### Usage
 
 ```tsx
-import useAsyncFunction from "@b2chatorg/chat-center-widget-sdk/dist/react/useAsyncFunction";
+import useAsyncFunction from "@b2chat/chat-center-widget-sdk/dist/react/useAsyncFunction";
 
 const doLogin = async (user: string) => {
   await new Promise(r => setTimeout(r, 2000)); // wait 2 seg
@@ -291,7 +296,7 @@ const App = () => {
 **JS** vanilla
 
 ```ts
-import { getB2ChatStore } from "@b2chatorg/chat-center-widget-sdk";
+import { getB2ChatStore } from "@b2chat/chat-center-widget-sdk";
 
 /// get b2chat store instance
 const store = getB2ChatStore();
@@ -311,7 +316,7 @@ With **React** library
 
 ```tsx
 import { useEffect, useState } from "react";
-import { useB2ChatStore } from "@b2chatorg/chat-center-widget-sdk/dist/react";
+import { useB2ChatStore } from "@b2chat/chat-center-widget-sdk/dist/react";
 
 const App = () => {
   const { state } = useB2ChatStore();
@@ -438,7 +443,7 @@ console.log(response.data);
 All types related to B2Chat are available at:
 
 ```ts
-import {...} from "@b2chatorg/chat-center-widget-sdk/dist/types";
+import {...} from "@b2chat/chat-center-widget-sdk/dist/types";
 ```
 
 Please take a look to all types.
