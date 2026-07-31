@@ -1,0 +1,30 @@
+name: Sync Docs to core-documentation
+
+# Post-merge ONLY: when a PR is merged into main, ask the doc-sync agent (hosted in
+# b2chat/core-documentation) to analyze what this PR injected into main and open a documentation
+# PR there. This is a BACKEND repo → doc_target: technical (the agent updates technical/ only).
+# Runs on `closed` + `merged == true` so an approved-but-failed merge never triggers it.
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  sync-docs:
+    # post-merge, not post-approve; only for merges into main
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
+    permissions:
+      contents: read
+      pull-requests: read
+    uses: b2chat/core-documentation/.github/workflows/doc-sync-agent.yml@main
+    with:
+      source_repo: ${{ github.repository }}
+      pr_number: ${{ github.event.pull_request.number }}
+      pr_title: ${{ github.event.pull_request.title }}
+      pr_url: ${{ github.event.pull_request.html_url }}
+      pr_author: ${{ github.event.pull_request.user.login }}
+      head_branch: ${{ github.event.pull_request.head.ref }}
+      doc_target: technical
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_BACKEND }}
+      DOCS_SYNC_PAT: ${{ secrets.DOCS_SYNC_PAT }}
