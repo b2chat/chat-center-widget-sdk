@@ -14,7 +14,7 @@
   },
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "devDependencies": {
-    "@babel/core": "^7.22.20",
+    "@babel/core": "^7.29.13",
     "@babel/preset-env": "^7.22.20",
     "@babel/preset-typescript": "^7.22.15",
     "@jest/globals": "^29.7.0",
